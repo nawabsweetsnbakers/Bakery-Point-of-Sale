@@ -17,6 +17,58 @@ let categoryDB = new Datastore( {
 
 console.log(process.env.APPDATA);
 categoryDB.ensureIndex({ fieldName: '_id', unique: true });
+
+/*
+ * Add the bakery's standard categories without deleting or replacing any
+ * categories already entered by the store. Existing names are compared
+ * case-insensitively so repeated app starts do not create duplicates.
+ */
+const defaultCategories = [
+    "Mithai",
+    "Bakery items",
+    "Cakes",
+    "Biscuits & Nankhatai",
+    "Ice cream",
+    "Desi ghee",
+    "Snacks & beverages"
+];
+
+categoryDB.find({}, function (findError, existingCategories) {
+    if (findError) {
+        console.error("Could not check default product categories:", findError);
+        return;
+    }
+
+    const existingNames = new Set(
+        existingCategories.map(function (category) {
+            return String(category.name || "").trim().toLowerCase();
+        })
+    );
+
+    const missingCategories = defaultCategories
+        .filter(function (name) {
+            return !existingNames.has(name.toLowerCase());
+        })
+        .map(function (name, index) {
+            return {
+                _id: Date.now() + index,
+                name: name
+            };
+        });
+
+    if (missingCategories.length === 0) {
+        return;
+    }
+
+    categoryDB.insert(missingCategories, function (insertError) {
+        if (insertError) {
+            console.error("Could not seed default product categories:", insertError);
+        } else {
+            console.log("Added " + missingCategories.length + " default bakery categories.");
+        }
+    });
+});
+
 app.get( "/", function ( req, res ) {
     res.send( "Category API" );
 } );
