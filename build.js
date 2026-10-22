@@ -4,12 +4,12 @@ const path = require('path');
 const rootPath = path.join('./');
 
 resultPromise = electronInstaller.createWindowsInstaller({
-    appDirectory: './release-builds/POS-win32-x64',
+    appDirectory: './release-builds/NawabSweetsBakersPOS-win32-x64',
     outputDirectory: './installers',
-    authors: 'Hosting Domain',
+    authors: 'Nawab Sweets & Bakers',
     noMsi: true,
-    exe: 'pos.exe',
-    setupExe: 'POSInstaller.exe',
+    exe: 'NawabSweetsBakersPOS.exe',
+    setupExe: 'NawabSweetsBakersPOSInstaller.exe',
     setupIcon: path.join(rootPath, 'assets', 'images', 'icon.ico')
   });
 
